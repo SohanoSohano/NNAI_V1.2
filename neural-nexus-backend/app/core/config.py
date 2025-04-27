@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     # API Keys & Settings
     HF_TOKEN: str | None = None
     GEMINI_API_KEY: str | None = None
-    ALLOWED_ORIGINS: str = "http://localhost:3000"
+    ALLOWED_ORIGINS: str = "*"
     GEMINI_MODEL_NAME: str = "gemini-1.5-flash" # Added based on analysis.py usage
 
     # Celery
