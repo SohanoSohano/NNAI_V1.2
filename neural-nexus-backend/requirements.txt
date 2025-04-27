@@ -35,3 +35,5 @@ google-generativeai
 
 aioredis
 celery
+
+medmnist>=0.3.0
