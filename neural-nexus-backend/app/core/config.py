@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     HF_TOKEN: str | None = None
     GEMINI_API_KEY: str | None = None
     ALLOWED_ORIGINS: str = "*"
-    GEMINI_MODEL_NAME: str = "gemini-1.5-flash" # Added based on analysis.py usage
+    GEMINI_MODEL_NAME: str = "gemini-2.0-flash" # Added based on analysis.py usage
 
     # Celery
     CELERY_BROKER_URL: str = "redis://redis:6379/0"
