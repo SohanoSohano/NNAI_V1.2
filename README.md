@@ -6,8 +6,6 @@ The platform enables researchers, students, and developers to evolve weights for
 
 ![Screenshot 2025-04-23 181453](https://github.com/user-attachments/assets/591c02a0-d7aa-4e91-b885-fbd9581ad091)
 
-![Screenshot 2025-04-24 131138](https://github.com/user-attachments/assets/e997d579-e51d-482a-9e6b-e7bca2f652f9)
-
 ![Screenshot 2025-04-23 180343](https://github.com/user-attachments/assets/d3af337b-8846-4d30-a568-90944834ee1c)
 
 
@@ -46,6 +44,8 @@ NeuroForge distinguishes itself through its holistic approach to neural network 
 - **No deep evolutionary computation expertise required** — ideal for researchers, students, and developers.
 - Combines **evolutionary computation**, **large language models**, and **interactive visualization** in a unified platform.
 - Designed for **flexibility** for experts and **simplicity** for beginners.
+
+![Screenshot 2025-04-24 131138](https://github.com/user-attachments/assets/e997d579-e51d-482a-9e6b-e7bca2f652f9)
 
 ---
 
