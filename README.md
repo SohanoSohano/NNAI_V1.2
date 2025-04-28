@@ -4,6 +4,9 @@
 
 The platform enables researchers, students, and developers to evolve weights for custom PyTorch models without requiring deep expertise in evolutionary computation. By combining a user-friendly interface with powerful computational capabilities, NeuroForge democratizes access to advanced optimization techniques while maintaining flexibility for experienced practitioners to configure parameters, define custom model architectures, and implement specialized evaluation functions.
 
+![Screenshot 2025-04-23 181453](https://github.com/user-attachments/assets/591c02a0-d7aa-4e91-b885-fbd9581ad091)
+
+
 ---
 
 ## 🛠️ System Architecture
