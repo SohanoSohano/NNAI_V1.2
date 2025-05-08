@@ -1,34 +1,19 @@
-output "vpc_id" {
-  description = "The ID of the created VPC."
-  value       = aws_vpc.main.id
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = aws_lb.main.dns_name
 }
 
-output "public_subnet_ids" {
-  description = "List of IDs for the public subnets."
-  value       = aws_subnet.public[*].id
+output "jenkins_server_public_ip" {
+  description = "Public IP address of the Jenkins server"
+  value       = aws_instance.jenkins_master.public_ip
 }
 
-output "private_subnet_ids" {
-  description = "List of IDs for the private subnets."
-  value       = aws_subnet.private[*].id
+output "frontend_ecr_repository_url" {
+  description = "URL of the ECR repository for the frontend image"
+  value       = aws_ecr_repository.frontend.repository_url
 }
 
-output "ecs_cluster_name" {
-  description = "The name of the ECS cluster."
-  value       = aws_ecs_cluster.main.name
-}
-
-output "ecs_task_execution_role_arn" {
-  description = "ARN of the ECS Task Execution Role."
-  value       = aws_iam_role.ecs_task_execution_role.arn
-}
-
-output "ecs_task_security_group_id" {
-  description = "The ID of the security group for ECS tasks."
-  value       = aws_security_group.ecs_tasks.id
-}
-
-output "ecs_service_name" {
-  description = "The name of the example ECS service created."
-  value       = aws_ecs_service.app.name # Only if creating the example service
+output "backend_ecr_repository_url" {
+  description = "URL of the ECR repository for the backend image"
+  value       = aws_ecr_repository.backend.repository_url
 }

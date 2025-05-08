@@ -8,6 +8,12 @@ services:
       - redis_data:/data
     networks:
       - app_network
+    # Optional: Add a simple healthcheck for Redis if desired, though less critical for this specific problem
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "--raw", "incr", "ping"] # Or simply "redis-cli ping"
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   backend:
     build:
@@ -19,12 +25,12 @@ services:
       - uploads:/code/uploads
       - results:/code/results
       - ./host_rag_storage:/code/storage
-      # CORRECTED MAPPING BELOW:
-      - ./host_rag_data/research_papers/raw_pdfs:/code/data/research_papers/raw_pdfs # Map host raw_pdfs to container raw_pdfs
+      - ./host_rag_data/research_papers/raw_pdfs:/code/data/research_papers/raw_pdfs
     ports:
       - "8000:8000"
-    depends_on:
-      - redis
+    depends_on: # Backend depends on Redis starting
+      redis:
+        condition: service_started # Or service_healthy if Redis has a healthcheck
     env_file:
       - .env
     deploy:
@@ -36,21 +42,29 @@ services:
               capabilities: [gpu]
     networks:
       - app_network
+    healthcheck: # <<< ADDED HEALTHCHECK FOR BACKEND
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"] # Adjust path if your health endpoint is different
+      interval: 30s      # Check every 30 seconds
+      timeout: 10s       # Wait 10 seconds for the command to complete
+      retries: 5         # Try 5 times before marking as unhealthy
+      start_period: 60s  # Grace period of 60s for the service to start up before checks begin counting towards retries
 
   celery_worker:
     build:
       context: ./neural-nexus-backend
-      dockerfile: Dockerfile.backend
-    command: celery -A celery_worker.celery_app worker --loglevel=INFO -P solo
+      dockerfile: Dockerfile.backend # Assuming same Dockerfile as backend (which should include curl)
+    command: celery -A app.core.celery_app.celery_app worker --loglevel=INFO -P solo
     volumes:
       - ./neural-nexus-backend:/code
       - uploads:/code/uploads
       - results:/code/results
       - ./host_rag_storage:/code/storage
-      # CORRECTED MAPPING BELOW:
-      - ./host_rag_data/research_papers/raw_pdfs:/code/data/research_papers/raw_pdfs # Map host raw_pdfs to container raw_pdfs
-    depends_on:
-      - redis
+      - ./host_rag_data/research_papers/raw_pdfs:/code/data/research_papers/raw_pdfs
+    depends_on: # <<< UPDATED depends_on
+      redis:
+        condition: service_started # Or service_healthy if Redis has a healthcheck
+      backend:
+        condition: service_healthy # Wait for backend to be healthy
     env_file:
       - .env
     deploy:
@@ -67,14 +81,13 @@ services:
     build:
       context: ./neural-nexus-frontend
       dockerfile: Dockerfile.frontend
-      #args:
-        #NEXT_PUBLIC_API_URL: http://backend:8000/api/v1
     ports:
       - "3000:3000"
-    depends_on:
-      - backend
+    depends_on: # <<< UPDATED depends_on
+      backend:
+        condition: service_healthy # Wait for backend to be healthy
     environment:
-       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1 # This stays as localhost for browser access
     networks:
       - app_network
 
@@ -86,4 +99,3 @@ volumes:
 networks:
   app_network:
     driver: bridge
-

@@ -1,5 +1,5 @@
 # app/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 # Import initialization/status functions for RAG
 from app.api.endpoints.advisor import initialize_rag_system, get_rag_status
@@ -87,15 +87,27 @@ def read_root():
     }
 
 # --- Health Check Endpoint ---
-@app.get("/health")
-def health_check():
-    # (Health check remains the same)
-    rag_status = get_rag_status()
-    status_value = rag_status.get("status", "unknown") if isinstance(rag_status, dict) else "unknown"
-    return {"status": "ok", "rag_status": status_value}
+@app.get("/api/v1/health", status_code=status.HTTP_200_OK)
+async def health_check(): 
+    """
+    Primary health check endpoint.
+    Returns 200 OK if the application is running and includes RAG status.
+    """
+    rag_status_info = get_rag_status() 
+    rag_status_value = "unknown" 
 
-# --- Optional: Add uvicorn run block for direct execution ---
-# import uvicorn
-# if __name__ == "__main__":
-#     logger.info("Starting Uvicorn server directly...")
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    if isinstance(rag_status_info, dict) and "status" in rag_status_info:
+        rag_status_value = rag_status_info["status"]
+    elif isinstance(rag_status_info, str):
+        rag_status_value = rag_status_info
+
+    app_status = "healthy"
+
+    return {
+        "status": app_status,
+        "message": "NeuroForge Backend is healthy!",
+        "dependencies": { 
+            "rag_system_status": rag_status_value
+        }
+    }

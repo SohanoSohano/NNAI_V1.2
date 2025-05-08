@@ -1,85 +1,107 @@
 variable "aws_region" {
-  description = "The AWS region to deploy resources in."
+  description = "AWS region to deploy resources"
   type        = string
-  default     = "us-east-1" # Choose your desired region
+  default     = "us-east-1" # Choose your preferred region
 }
 
 variable "project_name" {
-  description = "A name prefix for resources to ensure uniqueness and grouping."
+  description = "A unique name for the project"
   type        = string
-  default     = "my-ecs-app"
+  default     = "neuroforge"
 }
 
 variable "vpc_cidr" {
-  description = "The CIDR block for the VPC."
+  description = "CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
-  description = "List of CIDR blocks for public subnets (one per AZ)."
+  description = "List of CIDR blocks for public subnets"
   type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+  default     = ["10.0.1.0/24", "10.0.2.0/24"] # Ensure you have at least 2 for ALB/NAT GW HA
 }
 
 variable "private_subnet_cidrs" {
-  description = "List of CIDR blocks for private subnets (one per AZ)."
+  description = "List of CIDR blocks for private subnets"
   type        = list(string)
-  default     = ["10.0.101.0/24", "10.0.102.0/24"]
+  default     = ["10.0.101.0/24", "10.0.102.0/24"] # Match number of public subnets
 }
 
-variable "availability_zones" {
-  description = "List of Availability Zones to use (must match the number of subnets)."
-  type        = list(string)
-  # Let Terraform determine AZs dynamically based on the chosen region
-  default = []
-}
-
-variable "ecs_cluster_name" {
-  description = "Name for the ECS Cluster."
+variable "frontend_image_tag" {
+  description = "Docker image tag for the frontend (e.g., latest, or a specific version)"
   type        = string
-  default     = "main-cluster"
+  default     = "latest"
 }
 
-# --- Example Task Definition Variables (Modify for your app) ---
-variable "ecs_task_family" {
-  description = "Family name for the ECS Task Definition."
+variable "backend_image_tag" {
+  description = "Docker image tag for the backend/worker (e.g., latest)"
   type        = string
-  default     = "nginx-example-task"
+  default     = "latest"
 }
 
-variable "ecs_service_name" {
-  description = "Name for the ECS Service."
+variable "redis_image_name" {
+  description = "Docker image for Redis (e.g., redis:alpine)"
   type        = string
-  default     = "nginx-example-service"
+  default     = "redis:alpine"
 }
 
-variable "container_image" {
-  description = "Docker image to run in the container."
-  type        = string
-  default     = "nginx:latest" # Replace with your image from ECR later
-}
-
-variable "container_port" {
-  description = "Port the container listens on."
+variable "frontend_port" {
+  description = "Port the frontend container listens on"
   type        = number
   default     = 3000
 }
 
-variable "desired_task_count" {
-  description = "Number of tasks to run for the service."
+variable "backend_port" {
+  description = "Port the backend container listens on"
+  type        = number
+  default     = 8000
+}
+
+variable "redis_port" {
+  description = "Port the Redis container listens on"
+  type        = number
+  default     = 6379
+}
+
+variable "fargate_cpu" {
+  description = "Fargate task CPU units (e.g., 256, 512, 1024)"
+  type        = number
+  default     = 512 # Adjust based on needs, affects cost
+}
+
+variable "fargate_memory" {
+  description = "Fargate task memory in MiB (e.g., 512, 1024, 2048)"
+  type        = number
+  default     = 1024 # Adjust based on needs, affects cost
+}
+
+variable "desired_task_count_frontend" {
+  description = "Desired number of tasks for the frontend service"
+  type        = number
+  default     = 1 # Start with 1 for free tier considerations
+}
+
+variable "desired_task_count_backend" {
+  description = "Desired number of tasks for the backend service"
   type        = number
   default     = 1
 }
 
-variable "task_cpu" {
-  description = "Fargate task CPU units (e.g., 256 = 0.25 vCPU)."
+variable "desired_task_count_worker" {
+  description = "Desired number of tasks for the celery worker service"
   type        = number
-  default     = 256
+  default     = 1
 }
 
-variable "task_memory" {
-  description = "Fargate task memory MiB (e.g., 512 = 0.5 GB)."
-  type        = number
-  default     = 512
+variable "jenkins_instance_type" {
+  description = "EC2 instance type for Jenkins server"
+  type        = string
+  default     = "t2.micro" # Free tier eligible
+}
+
+variable "jenkins_key_name" {
+  description = "Name of the EC2 Key Pair to use for Jenkins server (must exist in your AWS account)"
+  type        = string
+  # default   = "your-ec2-key-pair-name" # IMPORTANT: Set this or create one
 }
